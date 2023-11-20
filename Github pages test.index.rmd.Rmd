@@ -1,0 +1,63 @@
+---
+title: "Test page"
+author: "Rhys Davies"
+date: "2023-11-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+diamonds %>% 
+  group_by(cut) %>% 
+  summarise(prop = n()/nrow(diamonds)) %>% 
+ mutate(col = case_when( # using case_when to set color rules to proportion
+   prop == max(prop) ~ "green4",
+   prop == min(prop) ~ "red4",
+   prop > min(prop) & prop <max(prop) ~ "gray60"
+ ),cut = forcats::fct_reorder(cut, prop, .desc = TRUE)) %>% 
+  ggplot(aes(x =prop, y = cut, fill = col)) + #here specifying we want color set by our colour rules
+  geom_col() +
+  geom_text(
+    aes(label = paste0("  ", sprintf("%0.1f",prop * 100), "%  "), 
+        color = prop > .05,  
+        hjust = prop > .05), 
+    size = 4, fontface = "bold"
+  ) +
+  scale_x_continuous( 
+    expand = c(0, 0), limits = c(0, .4),  
+    labels = scales::label_percent(), 
+    name = "Proportion" 
+  ) +
+  scale_color_manual(
+    values = c("black", "white"),
+    guide = "none") +
+  scale_fill_identity(guide = "none") + # Setting guide to "none" to remove legend
+  facet_wrap(~ cut, ncol = 1, scales = "free_y")+
+  scale_y_discrete(guide = "none", 
+    expand = expansion(add = c(.8, .6)) 
+  ) +
+  theme(strip.text = element_text(
+    hjust = 0, margin = margin(1, 0, 1, 0), 
+    size = rel(1.1), face = "bold"
+  ))
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
